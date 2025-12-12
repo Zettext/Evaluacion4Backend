@@ -58,10 +58,9 @@ class EventoViewSet(viewsets.ModelViewSet):
         except Http404:
             raise NotFound("El recurso solicitado no existe o fue eliminado.\nPor favor, borra la cuenta")
         
-
 def custom_404(request, exception):
     return JsonResponse({
-        'status_code': 404,
-        'error': 'Not Found',
-        'detail': 'La ruta solicitada no existe en esta API. Verifica la URL.'
+        "status_code": 404,
+        "error_type": "RouteNotFound",
+        "detail": "La ruta URL solicitada no existe en esta API. Verifica el endpoint."
     }, status=404)
