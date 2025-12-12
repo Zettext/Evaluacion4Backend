@@ -1,6 +1,6 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from .models import Departamento, Sensor, Evento
 from .serializers import DepartamentoSerializer, SensorSerializer, EventoSerializer
@@ -26,7 +26,6 @@ class DepartamentoViewSet(viewsets.ModelViewSet):
     queryset = Departamento.objects.all()
     serializer_class = DepartamentoSerializer
     permission_classes = [IsAdminUser]# Solo admin
-    
 
     def get_object(self):
         try:
@@ -34,11 +33,20 @@ class DepartamentoViewSet(viewsets.ModelViewSet):
         except Http404:
             raise NotFound("El recurso solicitado no existe o fue eliminado.\nPor favor, borra la cuenta")
 
+#solo operadores ver y admin hacer acciones
+class IsAdminOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        # Permitir GET, HEAD, OPTIONS a cualquier usuario autenticado
+        if request.method in permissions.SAFE_METHODS:
+            return request.user and request.user.is_authenticated
+        # POST, PUT, DELETE solo para Admin (is_staff)
+        return request.user and request.user.is_staff
+    
 # 3. ViewSet para Sensores (Protegido con Token)
 class SensorViewSet(viewsets.ModelViewSet):
     queryset = Sensor.objects.all()
     serializer_class = SensorSerializer
-    permission_classes = [IsAuthenticated]# Solo usuarios logueados
+    permission_classes = [IsAdminOrReadOnly]# Solo usuarios logueados
 
     def get_object(self):
         try:
@@ -64,3 +72,4 @@ def custom_404(request, exception):
         "error_type": "RouteNotFound",
         "detail": "La ruta URL solicitada no existe en esta API. Verifica el endpoint."
     }, status=404)
+
