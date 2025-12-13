@@ -4,14 +4,13 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from api.views import DepartamentoViewSet, SensorViewSet, EventoViewSet, api_info, custom_404
 
-# El Router crea las rutas del CRUD automáticamente
 router = DefaultRouter()
 router.register(r'departamentos', DepartamentoViewSet)
 router.register(r'sensores', SensorViewSet)
 router.register(r'eventos', EventoViewSet)
 
 urlpatterns = [
-    # Panel de administración
+    # ADMIN
     path('admin/', admin.site.urls),
     
     # RUTAS PARA EL TOKEN
@@ -20,8 +19,8 @@ urlpatterns = [
 
     #informacion, publica
     path('api/info/', api_info, name='api_info'),
-    
-    # Rutas automáticas de la API (sensores, departamentos, eventos)
+
+    #router para no tener que hacer mil api/algo naajja
     path('api/', include(router.urls)),
 ]
 

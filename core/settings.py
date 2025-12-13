@@ -79,6 +79,10 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+#PROFE, ESTE NO ESTÁ CON LOS PARAMETROS DE LA BD DIRECTA.
+#TENGO MAS PROYECTOS EN EL PYTHONANYWHERE ENTONCES ES REGALARLE MIS
+#BASES DE DATOS JASDAHSDASL PERDONE
+#LE DEJARÉ CUANDO LA USÉ EN LOCAL PARA LAS PRUEBAS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -113,9 +117,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-cl'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 
@@ -141,10 +145,10 @@ REST_FRAMEWORK = {
     ),
     'EXCEPTION_HANDLER': 'api.exceptions.custom_exception_handler',
 }
-
+#plazo de vida del token
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
-
-CORS_ALLOW_ALL_ORIGINS = True  # Permitir acceso desde cualquier lugar (público)
+#permitir acceso de todos lados
+CORS_ALLOW_ALL_ORIGINS = True

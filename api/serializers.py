@@ -11,19 +11,17 @@ class DepartamentoSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate_nombre(self, value):
-        # 1. Limpieza básica
         nombre = value.strip()
         
-        # 2. Longitud mínima
+        #long minima
         if len(nombre) < 3:
             raise serializers.ValidationError("El nombre es muy corto (mínimo 3 letras).")
 
-        # 3. Formato (Solo letras, números y espacios - Sin símbolos raros)
+        # limpieza para el formato, *APRENDER COMO FUNCIONA* sinceramente el arreglo no lo hice yo.
         if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s\-\.]+$', nombre):
             raise serializers.ValidationError("El nombre contiene caracteres inválidos. Use solo letras, números y espacios.")
 
-        # 4. Unicidad (Evitar duplicados tipo "Bodega" y "bodega")
-        # Si estamos creando (no hay self.instance) o actualizando (cambiando el nombre)
+        #revisar si existe para q no hayan duplicados
         existe = Departamento.objects.filter(nombre__iexact=nombre)
         if self.instance:
             existe = existe.exclude(pk=self.instance.pk)
@@ -51,22 +49,23 @@ class SensorSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate_mac_address(self, value):
-        # 1. Formato estricto XX:XX:XX:XX:XX:XX (Hexadecimal)
+        # nuevamente, aprender el formato
         patron_mac = r'^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$'
         if not re.match(patron_mac, value):
             raise serializers.ValidationError("Formato inválido. Debe ser XX:XX:XX:XX:XX:XX (ej: AA:BB:CC:11:22:33)")
         
-        return value.upper() # Lo guardamos siempre en mayúsculas para ordenar
+        return value.upper() #mayusculas siempre 
 
+    #nuevamente, que tenga por lo menos 3 caracteres
     def validate_modelo(self, value):
         if len(value.strip()) < 3:
             raise serializers.ValidationError("El modelo debe tener al menos 3 caracteres.")
         
-        # Evitar caracteres peligrosos como <script> o $
+        #ARREGLO PARA EVITAR SIMBOLOS NO UTILES
         if re.search(r'[<>${};]', value):
             raise serializers.ValidationError("El modelo contiene caracteres no permitidos.")
             
-        return value.strip()
+        return value.strip()#terminar de limpiar
 
     # VALIDACIÓN GLOBAL (Relación entre campos)
     def validate(self, data):
@@ -79,7 +78,7 @@ class SensorSerializer(serializers.ModelSerializer):
                 "estado": "No se puede activar el sensor sin asignarlo a un departamento."
             })
         
-        # Regla 2: Un sensor PERDIDO no debería tener departamento asignado (opcional, pero profesional)
+        # Regla 2: Un sensor PERDIDO no debería tener departamento asignado
         if estado == 'perdido' and departamento:
             raise serializers.ValidationError({
                 "estado": "Un sensor declarado como 'perdido' no puede estar asignado a un departamento."

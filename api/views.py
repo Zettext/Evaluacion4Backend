@@ -4,12 +4,13 @@ from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser, I
 from rest_framework.response import Response
 from .models import Departamento, Sensor, Evento
 from .serializers import DepartamentoSerializer, SensorSerializer, EventoSerializer
+
 #para el error personalizado
 from django.http import Http404
 from rest_framework.exceptions import NotFound
 from django.http import JsonResponse
 
-# endpoint publico
+#endpoint publico
 @api_view(['GET'])
 @permission_classes([AllowAny]) 
 def api_info(request):
@@ -21,7 +22,7 @@ def api_info(request):
         "version": "6.9"
     })
 
-# 2. ViewSet para Departamentos (Protegido con Token)
+#Viewset protegido con token
 class DepartamentoViewSet(viewsets.ModelViewSet):
     queryset = Departamento.objects.all()
     serializer_class = DepartamentoSerializer
@@ -36,13 +37,13 @@ class DepartamentoViewSet(viewsets.ModelViewSet):
 #solo operadores ver y admin hacer acciones
 class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
-        # Permitir GET, HEAD, OPTIONS a cualquier usuario autenticado
+        #permitir menos opciones a alguien 
         if request.method in permissions.SAFE_METHODS:
             return request.user and request.user.is_authenticated
-        # POST, PUT, DELETE solo para Admin (is_staff)
+        # POST, PUT, DELETE solo para Admin
         return request.user and request.user.is_staff
     
-# 3. ViewSet para Sensores (Protegido con Token)
+#Viewset protegido con token
 class SensorViewSet(viewsets.ModelViewSet):
     queryset = Sensor.objects.all()
     serializer_class = SensorSerializer
@@ -54,7 +55,7 @@ class SensorViewSet(viewsets.ModelViewSet):
         except Http404:
             raise NotFound("El recurso solicitado no existe o fue eliminado.\nPor favor, borra la cuenta")
 
-# 4. ViewSet para Eventos (Protegido con Token)
+#Viewset protegido con token
 class EventoViewSet(viewsets.ModelViewSet):
     queryset = Evento.objects.all()
     serializer_class = EventoSerializer
